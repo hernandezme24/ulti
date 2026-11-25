@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Números Reales — Matemática Unidad 01</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <style>
+    /* =====================================================
+       ARCHITECTURAL ATELIER — DARK THEME
+       Sistema de diseño para presentación académica
+    ===================================================== */
+    :root {
+      --bg:          #0c0d10;
+      --bg-low:      #18191e;
+      --bg-mid:      #1e2027;
+      --bg-high:     #262830;
+      --bg-highest:  #32353e;
+      --bg-lowest:   #121316;
+      --fg:          #fbf9f4;
+      --fg-dim:      #c9c6bc;
+      --fg-muted:    #a4a8b5;
+      --border:      #3b3e4a;
+      --border-dim:  #262830;
+      --accent:      #4d6ef5;   /* azul institucional */
+      --accent-dim:  #3a56cc;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+      --sp-xs:.25rem;--sp-sm:.5rem;--sp-md:1rem;
+      --sp-lg:1.5rem;--sp-xl:2.5rem;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased;user-select:none}
+
+    /* ---- LAYOUT ---- */
+    #app{display:flex;flex-direction:column;height:100vh}
+
+    /* ---- HEADER ---- */
+    header{
+      position:fixed;top:0;left:0;right:0;z-index:200;
+      height:52px;
+      background:rgba(12,13,16,.96);
+      border-bottom:1px solid var(--border);
+      backdrop-filter:blur(16px);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 1.5rem;
+    }
+    .h-left{display:flex;align-items:center;gap:var(--sp-lg)}
+    .h-right{display:flex;align-items:center;gap:var(--sp-md)}
+    .btn-menu{
+      display:flex;align-items:center;gap:6px;
+      height:34px;padding:0 var(--sp-md);
+      background:transparent;border:1px solid var(--border);
+      color:var(--fg);cursor:pointer;
+      font-family:var(--mono);font-size:10px;
+      letter-spacing:.08em;text-transform:uppercase;
+      transition:background .15s;
+    }
+    .btn-menu:hover{background:var(--bg-high)}
+    .h-label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted)}
+    .h-label .hl{color:var(--fg);font-weight:600}
+    .avatar{width:30px;height:30px;border-radius:50%;background:var(--bg-high);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--fg)}
+    .mi{font-family:'Material Symbols Outlined';font-size:18px;font-weight:300;font-style:normal;line-height:1;letter-spacing:normal}
+
+    /* ---- TELEMETRY ---- */
+    .telemetry{
+      position:fixed;top:52px;left:0;right:0;z-index:190;
+      height:28px;
+      background:rgba(18,19,22,.95);
+      border-bottom:1px solid var(--border-dim);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 1.5rem;
+      font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+      text-transform:uppercase;color:var(--fg-muted);
+    }
+    .t-left{display:flex;align-items:center;gap:var(--sp-md)}
+    .t-right{display:flex;align-items:center;gap:var(--sp-lg)}
+    .dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:blink 2s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .t-hl{color:var(--fg);font-weight:600}
+    .t-chip{background:var(--bg-high);border:1px solid var(--border);padding:1px 7px;color:var(--accent)}
+
+    /* ---- PROGRESS ---- */
+    .progress-track{position:fixed;bottom:52px;left:0;right:0;height:2px;background:var(--border-dim);z-index:190}
+    .progress-fill{height:100%;background:var(--fg);transition:width .4s ease}
+
+    /* ---- MAIN ---- */
+    main{display:flex;flex:1;overflow:hidden;margin-top:80px;margin-bottom:52px}
+
+    /* ---- LEFT PANEL ---- */
+    #panel{
+      width:300px;min-width:260px;
+      background:var(--bg-lowest);
+      border-right:1px solid var(--border-dim);
+      display:flex;flex-direction:column;overflow:hidden;
+      transition:width .25s ease,min-width .25s ease;
+    }
+    #panel.closed{width:0;min-width:0;border:none}
+    .p-head{
+      padding:var(--sp-sm) var(--sp-md);
+      border-bottom:1px solid var(--border-dim);
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .p-title{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg);font-weight:600}
+    .p-count{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-muted)}
+    .p-controls{display:flex;gap:4px;padding:var(--sp-xs) var(--sp-md);border-bottom:1px solid var(--border-dim)}
+    .p-btn{
+      flex:1;height:32px;display:flex;align-items:center;justify-content:center;gap:5px;
+      background:var(--bg-low);border:1px solid var(--border-dim);color:var(--fg);
+      cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+      text-transform:uppercase;transition:background .15s;white-space:nowrap;
+    }
+    .p-btn:hover{background:var(--bg-high)}
+    .p-btn.on{background:var(--fg);color:var(--bg)}
+    .badge{background:var(--bg-high);border:1px solid var(--border);padding:1px 5px;font-size:9px}
+    #slide-list{flex:1;overflow-y:auto;padding:4px;display:flex;flex-direction:column;gap:3px}
+    #slide-list::-webkit-scrollbar{width:3px}
+    #slide-list::-webkit-scrollbar-thumb{background:var(--border)}
+    .s-item{
+      display:flex;align-items:flex-start;gap:var(--sp-sm);
+      padding:var(--sp-sm);border:1px solid var(--border-dim);
+      cursor:pointer;transition:all .15s;background:var(--bg-low);
+    }
+    .s-item:hover{background:var(--bg-high)}
+    .s-item.on{background:var(--fg);border-color:var(--fg)}
+    .s-num{
+      width:36px;height:34px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--bg-high);border:1px solid var(--border);
+      font-family:var(--mono);font-size:11px;font-weight:600;color:var(--fg);
+      transition:all .15s;
+    }
+    .s-item.on .s-num{background:rgba(0,0,0,.2);border-color:rgba(0,0,0,.3);color:var(--bg)}
+    .s-item:hover:not(.on) .s-num{background:var(--accent);border-color:var(--accent);color:#fff}
+    .s-info{flex:1;min-width:0}
+    .s-cat{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted)}
+    .s-item.on .s-cat{color:rgba(12,13,16,.5)}
+    .s-t{font-size:12px;font-weight:600;color:var(--fg);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .s-item.on .s-t{color:var(--bg)}
+    .s-sub{font-family:var(--mono);font-size:9px;color:var(--fg-muted);margin-top:2px}
+    .s-item.on .s-sub{color:rgba(12,13,16,.45)}
+    .s-active{display:none;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;color:rgba(12,13,16,.5);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+    .s-item.on .s-active{display:flex}
+    .s-dot{width:4px;height:4px;border-radius:50%;background:rgba(12,13,16,.4)}
+
+    /* ---- CANVAS ---- */
+    #canvas{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
+    #slide-display{flex:1;overflow-y:auto;padding:var(--sp-lg) var(--sp-xl)}
+    #slide-display::-webkit-scrollbar{width:5px}
+    #slide-display::-webkit-scrollbar-thumb{background:var(--border)}
+    .slide-canvas{
+      background:var(--bg-lowest);border:1px solid var(--border-dim);
+      position:relative;padding:var(--sp-xl);min-height:calc(100vh - 220px);
+      animation:fadeIn .25s ease;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .c-tl,.c-tr,.c-bl,.c-br{position:absolute;font-family:var(--mono);font-size:9px;color:var(--border);pointer-events:none}
+    .c-tl{top:8px;left:8px}.c-tr{top:8px;right:8px}.c-bl{bottom:8px;left:8px}.c-br{bottom:8px;right:8px}
+
+    /* ---- SLIDE TYPOGRAPHY ---- */
+    .s-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-md)}
+    .s-tag{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--bg-high);border:1px solid var(--border);padding:2px 8px}
+    .s-ref{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-muted)}
+    h1.sh1{font-size:clamp(26px,4vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1.05;color:var(--fg);text-transform:uppercase;margin-bottom:var(--sp-md)}
+    .divider{width:100%;height:1px;background:var(--fg);margin-bottom:var(--sp-lg)}
+    .body-text{font-size:14px;line-height:1.65;color:var(--fg-dim)}
+    .body-text-p{font-size:15px;color:var(--fg);line-height:1.6}
+
+    /* ---- MATH ---- */
+    .math{
+      background:var(--bg-low);border:1px solid var(--border);
+      border-left:2px solid var(--accent);
+      padding:var(--sp-md) var(--sp-lg);margin:var(--sp-md) 0;
+      font-family:var(--mono);font-size:13px;color:var(--accent);line-height:1.9;
+    }
+
+    /* ---- GRIDS ---- */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp-md)}
+
+    /* ---- CARDS ---- */
+    .card{background:var(--bg-low);border:1px solid var(--border-dim);padding:var(--sp-md)}
+    .card-label{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+    .card-title{font-size:14px;font-weight:600;color:var(--fg);margin-bottom:4px}
+    .card-body{font-size:13px;color:var(--fg-muted);line-height:1.6}
+
+    /* ---- TABLES ---- */
+    .tbl{width:100%;border-collapse:collapse;font-size:13px;margin:var(--sp-md) 0}
+    .tbl th{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted);border-bottom:1px solid var(--border-dim);padding:var(--sp-sm) var(--sp-md);text-align:left;background:var(--bg-high)}
+    .tbl td{padding:var(--sp-sm) var(--sp-md);border-bottom:1px solid var(--border-dim);color:var(--fg);vertical-align:middle}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl .a{color:var(--accent);font-family:var(--mono);font-size:12px}
+    .tbl .m{font-family:var(--mono);font-size:12px}
+
+    /* ---- COMPARE COLS ---- */
+    .cc{background:var(--bg-low);border:1px solid var(--border-dim);padding:var(--sp-lg)}
+    .cc-h{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding-bottom:var(--sp-sm);border-bottom:1px solid var(--border-dim);margin-bottom:var(--sp-md)}
+    .cc-row{padding:var(--sp-sm) 0;border-bottom:1px solid var(--border-dim);font-size:13px;color:var(--fg);line-height:1.55}
+    .cc-row:last-child{border-bottom:none}
+    .cc-ex{font-family:var(--mono);font-size:11px;color:var(--accent);margin-top:3px}
+
+    /* ---- COVER ---- */
+    .cover-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:var(--sp-md)}
+    .cover-title{font-size:clamp(44px,7vw,80px);font-weight:700;letter-spacing:-.04em;line-height:.95;color:var(--fg);text-transform:uppercase;margin-bottom:var(--sp-sm)}
+    .cover-sub{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:var(--sp-xl)}
+    .cover-tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted);margin-top:var(--sp-xl)}
+    .svg-wrap{padding:var(--sp-md) var(--sp-lg);background:var(--bg-low);border:1px solid var(--border-dim);margin:var(--sp-lg) 0}
+
+    /* ---- SYNTHESIS ---- */
+    .syn-item{display:flex;align-items:flex-start;gap:var(--sp-md);padding:var(--sp-md);border:1px solid var(--border-dim);margin-bottom:6px;transition:background .15s}
+    .syn-item:hover{background:var(--bg-high)}
+    .syn-n{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);flex-shrink:0;width:30px}
+    .syn-t{font-size:14px;color:var(--fg);line-height:1.5}
+    .final-box{margin-top:var(--sp-xl);padding:var(--sp-xl);border:1px solid var(--fg);text-align:center}
+    .final-box p{font-size:clamp(16px,2.5vw,26px);font-weight:700;letter-spacing:-.01em;text-transform:uppercase;color:var(--accent);line-height:1.35}
+
+    /* ---- FOOTER ---- */
+    footer{position:fixed;bottom:0;left:0;right:0;z-index:200;height:52px;background:rgba(12,13,16,.96);border-top:1px solid var(--border);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem}
+    .f-left{display:flex;align-items:center;gap:var(--sp-md);font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted)}
+    .nav-wrap{display:flex;align-items:center;background:var(--bg-low);border:1px solid var(--border)}
+    .nav-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--fg);cursor:pointer;transition:background .15s}
+    .nav-btn:hover{background:var(--bg-high)}
+    .nav-btn:disabled{opacity:.3;cursor:default}
+    .counter{padding:0 var(--sp-md);font-family:var(--mono);font-size:12px;display:flex;align-items:center;gap:5px;border-left:1px solid var(--border-dim);border-right:1px solid var(--border-dim)}
+    .c-cur{color:var(--fg);font-weight:600}
+    .c-sep{color:var(--border)}
+    .c-tot{color:var(--fg-muted)}
+    .f-right{display:flex;align-items:center;gap:4px}
+    .i-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--border);color:var(--fg);cursor:pointer;transition:background .15s}
+    .i-btn:hover{background:var(--bg-high)}
+
+    /* ---- UTILS ---- */
+    .mt-sm{margin-top:var(--sp-sm)}.mt-md{margin-top:var(--sp-md)}.mt-lg{margin-top:var(--sp-lg)}.mt-xl{margin-top:var(--sp-xl)}
+    .accent{color:var(--accent)}.muted{color:var(--fg-muted)}.mono{font-family:var(--mono)}
+    em{font-style:italic;color:var(--fg-dim)}
+
+    /* ---- RESPONSIVE ---- */
+    @media(max-width:768px){
+      #panel{position:fixed;left:0;top:80px;bottom:52px;z-index:150;transform:translateX(-110%);transition:transform .3s ease;width:280px;min-width:280px}
+      #panel.m-open{transform:translateX(0)}
+      #panel.closed{transform:translateX(-110%)}
+      #slide-display{padding:var(--sp-md)}
+      .slide-canvas{padding:var(--sp-lg)}
+      .g2,.g3{grid-template-columns:1fr}
+      .cover-title{font-size:clamp(36px,10vw,52px)}
+      .t-right{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="h-left">
+    <button class="btn-menu" id="menu-toggle">
+      <span class="mi">menu</span>
+      <span>Menú</span>
+    </button>
+    <span class="h-label"><span class="hl">ℝ</span> // Matemática · Unidad 01</span>
+  </div>
+  <div class="h-right">
+    <span class="h-label" id="axis-label" style="display:none">AXIS: X:000.00 Y:000.00</span>
+    <div class="avatar"><span class="mi">person</span></div>
+  </div>
+</header>
+
+<!-- TELEMETRY BAR -->
+<div class="telemetry">
+  <div class="t-left">
+    <span style="display:flex;align-items:center;gap:5px">
+      <span class="dot"></span>
+      <span class="t-hl">CANVAS VIRTUALIS: ACTIVO</span>
+    </span>
+    <span style="color:var(--border)">/</span>
+    <span>NÚMEROS REALES — ESTRUCTURA Y COMPLETITUD DE ℝ</span>
+  </div>
+  <div class="t-right">
+    <span><span class="t-hl">ℝ =</span> ℚ ∪ 𝕀</span>
+    <span>ℚ ∩ 𝕀 = ∅</span>
+    <span class="t-chip">ESCALA 1:1</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-track">
+  <div class="progress-fill" id="prog" style="width:8.33%"></div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <!-- LEFT PANEL -->
+  <div id="panel">
+    <div class="p-head">
+      <span class="p-title">■ Índice de Láminas</span>
+      <span class="p-count">12 TEMAS</span>
+    </div>
+    <div class="p-controls">
+      <button class="p-btn" id="btn-fs" title="Pantalla completa [F]">
+        <span class="mi" style="font-size:15px">fullscreen</span><span>[F]</span>
+      </button>
+      <button class="p-btn" id="btn-auto">
+        <span class="mi" style="font-size:15px" id="auto-icon">play_arrow</span>
+        <span>Auto</span>
+        <span class="badge" id="auto-badge">4s</span>
+      </button>
+    </div>
+    <div id="slide-list"></div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas">
+    <div id="slide-display">
+      <div class="slide-canvas" id="sc"></div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-left">
+    <span>+</span>
+    <span style="color:var(--fg);font-weight:600" id="f-ref">SEC 01 // REF NR-001</span>
+  </div>
+  <div class="nav-wrap">
+    <button class="nav-btn" id="btn-prev" title="Anterior [←]">
+      <span class="mi">west</span>
+    </button>
+    <div class="counter">
+      <span class="c-cur" id="c-cur">01</span>
+      <span class="c-sep">/</span>
+      <span class="c-tot">12</span>
+    </div>
+    <button class="nav-btn" id="btn-next" title="Siguiente [→]">
+      <span class="mi">east</span>
+    </button>
+  </div>
+  <div class="f-right">
+    <button class="i-btn" title="Vista cuadrícula">
+      <span class="mi">grid_view</span>
+    </button>
+    <button class="i-btn" id="btn-fs2">
+      <span class="mi">fullscreen</span>
+    </button>
+  </div>
+</footer>
+
+<script>
+/* =====================================================
+   SLIDE DATA — Números Reales (12 láminas)
+===================================================== */
+const slides = [
+
+/* 01 — PORTADA */
+{id:'01',cat:'PORTADA',title:'Números Reales',sub:'Matemática · Unidad 01',
+render(){return`
+<div class="c-tl">┌ [X: 001.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Matemática // Unidad 01</span><span class="s-ref">LÁM 01 // REF NR-001</span></div>
+<p class="cover-eyebrow">Unidad 01 · Curso de Matemática · Lcdo. M. E. Hernández</p>
+<h1 style="font-size:clamp(44px,7vw,80px);font-weight:700;letter-spacing:-.04em;line-height:.95;color:var(--fg);text-transform:uppercase;margin-bottom:.5rem">Números<br>Reales</h1>
+<div class="divider"></div>
+<p style="font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:2rem">Estructura, Orden y Completitud de la Recta</p>
+<div class="svg-wrap">
+  <svg viewBox="0 0 620 85" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    <line x1="20" y1="48" x2="580" y2="48" stroke="#fbf9f4" stroke-width="1.5"/>
+    <polygon points="580,48 568,43 568,53" fill="#fbf9f4"/>
+    <line x1="120" y1="41" x2="120" y2="55" stroke="#fbf9f4" stroke-width="1.5"/>
+    <text x="120" y="70" text-anchor="middle" fill="#a4a8b5" font-family="JetBrains Mono" font-size="12">-1</text>
+    <line x1="260" y1="41" x2="260" y2="55" stroke="#fbf9f4" stroke-width="1.5"/>
+    <text x="260" y="70" text-anchor="middle" fill="#a4a8b5" font-family="JetBrains Mono" font-size="12">0</text>
+    <line x1="400" y1="41" x2="400" y2="55" stroke="#fbf9f4" stroke-width="1.5"/>
+    <text x="400" y="70" text-anchor="middle" fill="#a4a8b5" font-family="JetBrains Mono" font-size="12">1</text>
+    <line x1="540" y1="41" x2="540" y2="55" stroke="#fbf9f4" stroke-width="1.5"/>
+    <text x="540" y="70" text-anchor="middle" fill="#a4a8b5" font-family="JetBrains Mono" font-size="12">2</text>
+    <circle cx="457" cy="48" r="7" fill="#4d6ef5"/>
+    <text x="457" y="28" text-anchor="middle" fill="#4d6ef5" font-family="JetBrains Mono" font-size="13">√2</text>
+    <line x1="457" y1="31" x2="457" y2="40" stroke="#4d6ef5" stroke-width="1" stroke-dasharray="2 2"/>
+  </svg>
+</div>
+<p style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-muted);margin-top:2rem">■ Cada punto, un número · Cada número, un punto</p>
+`}},
+
+/* 02 — LA RECTA REAL */
+{id:'02',cat:'RECTA REAL',title:'La Recta Real',sub:'Conjunto · Unicidad · Continuidad',
+render(){return`
+<div class="c-tl">┌ [X: 002.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 02 // La Recta Real</span><span class="s-ref">LÁM 02 // REF NR-002</span></div>
+<h1 class="sh1">La Recta Real</h1><div class="divider"></div>
+<div class="svg-wrap">
+  <svg viewBox="0 0 680 70" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    <line x1="20" y1="35" x2="650" y2="35" stroke="#fbf9f4" stroke-width="1.5"/>
+    <polygon points="650,35 638,30 638,40" fill="#fbf9f4"/>
+    <circle cx="80" cy="35" r="6" fill="#fbf9f4"/><text x="80" y="56" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">-3</text>
+    <circle cx="210" cy="35" r="6" fill="#fbf9f4"/><text x="210" y="56" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">-1/2</text>
+    <circle cx="330" cy="35" r="6" fill="#fbf9f4"/><text x="330" y="56" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">0</text>
+    <circle cx="420" cy="35" r="7" fill="#4d6ef5"/><text x="420" y="56" text-anchor="middle" fill="#4d6ef5" font-size="11" font-family="JetBrains Mono">√2</text>
+    <circle cx="478" cy="35" r="7" fill="#4d6ef5"/><text x="478" y="56" text-anchor="middle" fill="#4d6ef5" font-size="11" font-family="JetBrains Mono">π</text>
+    <circle cx="560" cy="35" r="6" fill="#fbf9f4"/><text x="560" y="56" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">4</text>
+  </svg>
+</div>
+<div class="g3 mt-md">
+  <div class="card"><div class="card-label">Conjunto ℝ</div><div class="card-title">Puntos de una recta</div><div class="card-body">El conjunto ℝ corresponde a todos los puntos de una recta geométrica orientada sin excepción.</div></div>
+  <div class="card"><div class="card-label">Unicidad</div><div class="card-title">Biyección exacta</div><div class="card-body">Cada punto es un único número real <em>(y viceversa)</em>. No hay puntos vacíos ni números sin posición.</div></div>
+  <div class="card"><div class="card-label">Continuidad</div><div class="card-title">Cero saltos, cero huecos</div><div class="card-body">La recta real no tiene interrupciones. Es un continuo perfecto sin espacios vacíos entre números.</div></div>
+</div>
+`}},
+
+/* 03 — TAXONOMÍA */
+{id:'03',cat:'TAXONOMÍA',title:'Taxonomía de los Números',sub:'ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ',
+render(){return`
+<div class="c-tl">┌ [X: 003.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 03 // Taxonomía</span><span class="s-ref">LÁM 03 // REF NR-003</span></div>
+<h1 class="sh1">Taxonomía de los Números</h1><div class="divider"></div>
+<div class="g2" style="align-items:start">
+  <div class="svg-wrap" style="margin:0">
+    <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+      <rect x="4" y="4" width="240" height="248" fill="none" stroke="#fbf9f4" stroke-width="1.2"/>
+      <text x="14" y="26" fill="#fbf9f4" font-size="20" font-family="serif" font-style="italic">ℝ</text>
+      <text x="200" y="90" fill="#4d6ef5" font-size="18" font-family="serif" font-style="italic">𝕀</text>
+      <text x="197" y="112" fill="#4d6ef5" font-size="11" font-family="JetBrains Mono">√2</text>
+      <text x="197" y="130" fill="#4d6ef5" font-size="11" font-family="JetBrains Mono">π</text>
+      <text x="197" y="148" fill="#4d6ef5" font-size="11" font-family="JetBrains Mono">e</text>
+      <rect x="18" y="38" width="158" height="204" fill="none" stroke="#c9c6bc" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="28" y="58" fill="#c9c6bc" font-size="18" font-family="serif" font-style="italic">ℚ</text>
+      <rect x="36" y="72" width="120" height="148" fill="none" stroke="#717582" stroke-width="1"/>
+      <text x="46" y="92" fill="#717582" font-size="16" font-family="serif" font-style="italic">ℤ</text>
+      <rect x="54" y="108" width="84" height="94" fill="none" stroke="#3b3e4a" stroke-width="1.5"/>
+      <text x="68" y="130" fill="#a4a8b5" font-size="15" font-family="serif" font-style="italic">ℕ</text>
+      <text x="62" y="152" fill="#3b3e4a" font-size="9" font-family="JetBrains Mono">1, 2, 3…</text>
+    </svg>
+  </div>
+  <div>
+    <table class="tbl">
+      <thead><tr><th>Conjunto</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td class="a">ℕ</td><td><strong>Naturales.</strong> Sirven para contar (1, 2, 3…).</td></tr>
+        <tr><td class="a">ℤ</td><td><strong>Enteros.</strong> Añaden cero y negativos (…-1, 0, 1…).</td></tr>
+        <tr><td class="a">ℚ</td><td><strong>Racionales.</strong> Se escriben como fracción (a/b, b ≠ 0).</td></tr>
+        <tr><td class="a">𝕀</td><td><strong>Irracionales.</strong> Decimal infinito no periódico. No admiten fracción.</td></tr>
+      </tbody>
+    </table>
+    <div class="math">ℚ ∪ 𝕀 = ℝ &nbsp;|&nbsp; ℚ ∩ 𝕀 = ∅</div>
+    <div class="card mt-md"><div class="card-label">Relación de contenencia</div><div class="card-body">ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ &nbsp;·&nbsp; Los irracionales (𝕀) son el complemento de ℚ en ℝ.</div></div>
+  </div>
+</div>
+`}},
+
+/* 04 — ANÁLISIS DECIMAL */
+{id:'04',cat:'ANÁLISIS DECIMAL',title:'Análisis Decimal y Fraccionario',sub:'Racionales vs. Irracionales',
+render(){return`
+<div class="c-tl">┌ [X: 004.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 04 // Análisis Decimal</span><span class="s-ref">LÁM 04 // REF NR-004</span></div>
+<h1 class="sh1">Análisis Decimal y Fraccionario</h1><div class="divider"></div>
+<div class="g2">
+  <div class="cc">
+    <div class="cc-h">■ Racionales (ℚ)</div>
+    <div class="cc-row">Se escriben como fracción exacta a/b (con a, b ∈ ℤ).</div>
+    <div class="cc-row">Decimal Exacto <em>(termina)</em> o Periódico <em>(repite patrón)</em>.<div class="cc-ex">3/4 → 0.75 &nbsp;|&nbsp; 2/3 → 0.666…</div></div>
+  </div>
+  <div class="cc" style="border-left:2px solid var(--accent)">
+    <div class="cc-h" style="color:var(--accent)">■ Irracionales (𝕀)</div>
+    <div class="cc-row">No admiten fracción de enteros bajo ninguna circunstancia.</div>
+    <div class="cc-row">Decimal Infinito y No Periódico <em>(puntos suspensivos reales)</em>.<div class="cc-ex">√2 = 1.41421356… &nbsp;|&nbsp; π = 3.14159265…</div></div>
+  </div>
+</div>
+<div class="svg-wrap mt-md" style="padding:.75rem var(--sp-md)">
+  <table class="tbl" style="margin:0">
+    <thead><tr><th>Tipo</th><th>Fracción</th><th>Decimal</th><th>¿Periódico?</th></tr></thead>
+    <tbody>
+      <tr><td>Racional</td><td class="a">3/4</td><td class="m">0.75</td><td>No (exacto)</td></tr>
+      <tr><td>Racional</td><td class="a">2/3</td><td class="m">0.666…</td><td>Sí (período: 6)</td></tr>
+      <tr><td>Irracional</td><td class="m muted">—</td><td class="a">1.41421356…</td><td>No</td></tr>
+      <tr><td>Irracional</td><td class="m muted">—</td><td class="a">3.14159265…</td><td>No</td></tr>
+    </tbody>
+  </table>
+</div>
+`}},
+
+/* 05 — CONSTRUCCIÓN GEOMÉTRICA */
+{id:'05',cat:'GEOMETRÍA',title:'Construcción Geométrica de √2',sub:'Diagonal del cuadrado unitario',
+render(){return`
+<div class="c-tl">┌ [X: 005.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 05 // Geometría</span><span class="s-ref">LÁM 05 // REF NR-005</span></div>
+<h1 class="sh1">Construcción Geométrica</h1><div class="divider"></div>
+<div class="g2" style="align-items:center">
+  <div class="svg-wrap" style="margin:0">
+    <svg viewBox="0 0 320 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+      <rect x="40" y="40" width="130" height="130" fill="none" stroke="#fbf9f4" stroke-width="1.5"/>
+      <line x1="40" y1="170" x2="170" y2="40" stroke="#4d6ef5" stroke-width="2.5"/>
+      <text x="85" y="118" fill="#4d6ef5" font-size="15" font-family="serif" font-style="italic">√2</text>
+      <path d="M 170 40 A 148 148 0 0 1 222 170" fill="none" stroke="#4d6ef5" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <line x1="20" y1="170" x2="300" y2="170" stroke="#fbf9f4" stroke-width="1.5"/>
+      <polygon points="300,170 290,165 290,175" fill="#fbf9f4"/>
+      <line x1="40" y1="163" x2="40" y2="177" stroke="#fbf9f4" stroke-width="1.5"/>
+      <text x="40" y="192" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">0</text>
+      <line x1="170" y1="163" x2="170" y2="177" stroke="#fbf9f4" stroke-width="1.5"/>
+      <text x="170" y="192" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">1</text>
+      <line x1="262" y1="163" x2="262" y2="177" stroke="#fbf9f4" stroke-width="1.5"/>
+      <text x="262" y="192" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">2</text>
+      <circle cx="222" cy="170" r="7" fill="#4d6ef5"/>
+      <text x="222" y="212" text-anchor="middle" fill="#4d6ef5" font-size="11" font-family="JetBrains Mono">√2</text>
+      <text x="105" y="192" text-anchor="middle" fill="#717582" font-size="9" font-family="JetBrains Mono">1</text>
+      <text x="27" y="110" fill="#717582" font-size="9" font-family="JetBrains Mono">1</text>
+      <text x="105" y="245" text-anchor="middle" fill="#3b3e4a" font-size="9" font-family="JetBrains Mono">DIAGONAL DEL CUADRADO UNITARIO</text>
+    </svg>
+  </div>
+  <div>
+    <div class="math">1² + 1² = 2 → Diagonal = √2</div>
+    <div class="card mt-md"><div class="card-label">Ecuación Pitagórica</div><div class="card-body" style="font-size:13px;line-height:1.65">La diagonal de un cuadrado unitario mide √2. No hace falta aproximar: la longitud es exacta. Su posición en la recta real es un punto preciso entre 1 y 2.</div></div>
+    <div class="math mt-md">√2 ≈ 1.41421356237…</div>
+    <div class="card mt-sm"><div class="card-label">Consecuencia histórica</div><div class="card-body" style="font-size:12px;line-height:1.6">√2 es irracional: su decimal es infinito y no periódico. Los pitagóricos lo consideraron una paradoja; hoy sabemos que vive en ℝ perfectamente.</div></div>
+  </div>
+</div>
+`}},
+
+/* 06 — ORDEN DENSO */
+{id:'06',cat:'ORDEN DENSO',title:'Orden Denso',sub:'Entre dos reales siempre hay infinitos',
+render(){return`
+<div class="c-tl">┌ [X: 006.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 06 // Orden Denso</span><span class="s-ref">LÁM 06 // REF NR-006</span></div>
+<h1 class="sh1">Orden Denso</h1><div class="divider"></div>
+<div class="g2" style="align-items:start">
+  <div>
+    <div class="card"><div class="card-label">Propiedad de Densidad</div><div class="card-body" style="font-size:14px;line-height:1.7">No existe un "siguiente" número real. Basta promediar dos números para encontrar otro que caiga estrictamente entre ellos.</div></div>
+    <div class="math mt-md">Si a &lt; b, entonces:<br>a &lt; (a+b)/2 &lt; b</div>
+    <div class="card mt-md"><div class="card-label">Consecuencia</div><div class="card-body" style="font-size:13px;line-height:1.65">Entre dos reales <em>siempre</em> hay infinitos reales. La recta no tiene "saltos" discretos.</div></div>
+    <div class="math mt-md">∀ a, b ∈ ℝ con a &lt; b:<br>∃ c ∈ ℝ tal que a &lt; c &lt; b</div>
+  </div>
+  <div class="svg-wrap" style="margin:0">
+    <svg viewBox="0 0 290 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+      <text x="140" y="22" fill="#a4a8b5" text-anchor="middle" font-size="11" font-family="JetBrains Mono">b − a</text>
+      <line x1="20" y1="30" x2="260" y2="30" stroke="#717582" stroke-width="1"/>
+      <line x1="20" y1="25" x2="20" y2="35" stroke="#717582" stroke-width="1.5"/>
+      <line x1="260" y1="25" x2="260" y2="35" stroke="#717582" stroke-width="1.5"/>
+      <line x1="20" y1="80" x2="260" y2="80" stroke="#fbf9f4" stroke-width="1.5"/>
+      <circle cx="20" cy="80" r="6" fill="#fbf9f4"/>
+      <text x="20" y="102" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">a</text>
+      <circle cx="140" cy="80" r="8" fill="#4d6ef5"/>
+      <text x="140" y="102" text-anchor="middle" fill="#4d6ef5" font-size="10" font-family="JetBrains Mono">(a+b)/2</text>
+      <circle cx="260" cy="80" r="6" fill="#fbf9f4"/>
+      <text x="260" y="102" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">b</text>
+      <text x="145" y="135" text-anchor="middle" fill="#3b3e4a" font-size="9" font-family="JetBrains Mono">∞ puntos intermedios</text>
+    </svg>
+  </div>
+</div>
+`}},
+
+/* 07 — CUERPO ORDENADO */
+{id:'07',cat:'ÁLGEBRA',title:'Un Cuerpo Ordenado',sub:'Propiedades algebraicas de ℝ',
+render(){return`
+<div class="c-tl">┌ [X: 007.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 07 // Álgebra de ℝ</span><span class="s-ref">LÁM 07 // REF NR-007</span></div>
+<h1 class="sh1">Un Cuerpo Ordenado</h1><div class="divider"></div>
+<table class="tbl">
+  <thead><tr><th>Propiedad</th><th>Suma</th><th>Producto</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Conmutativa</strong></td><td class="a">a + b = b + a</td><td class="a">a · b = b · a</td></tr>
+    <tr><td><strong>Asociativa</strong></td><td class="a">(a+b)+c = a+(b+c)</td><td class="a">(a·b)·c = a·(b·c)</td></tr>
+    <tr><td><strong>Distributiva</strong></td><td class="muted m">—</td><td class="a">a·(b+c) = ab + ac</td></tr>
+    <tr><td><strong>Elemento Neutro</strong></td><td class="a">a + 0 = a</td><td class="a">a · 1 = a</td></tr>
+    <tr><td><strong>Elemento Inverso</strong></td><td class="a">a + (−a) = 0</td><td class="a">a · a⁻¹ = 1 (si a ≠ 0)</td></tr>
+  </tbody>
+</table>
+<div class="math mt-lg"><strong>Tricotomía:</strong> Para cualesquiera a y b, se cumple exactamente una:<br>a &lt; b &nbsp;&nbsp;ó&nbsp;&nbsp; a = b &nbsp;&nbsp;ó&nbsp;&nbsp; a &gt; b</div>
+<div class="card mt-md"><div class="card-label">¿Qué es un cuerpo ordenado?</div><div class="card-body" style="font-size:13px;line-height:1.65">Un <strong>cuerpo</strong> es una estructura algebraica donde se puede sumar, restar, multiplicar y dividir (excepto por cero). ℝ es el único cuerpo ordenado y completo, salvo isomorfismo.</div></div>
+`}},
+
+/* 08 — INTERVALOS */
+{id:'08',cat:'INTERVALOS',title:'Tramos Continuos',sub:'Tipos de intervalos en ℝ',
+render(){return`
+<div class="c-tl">┌ [X: 008.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 08 // Intervalos</span><span class="s-ref">LÁM 08 // REF NR-008</span></div>
+<h1 class="sh1">Tramos Continuos</h1><div class="divider"></div>
+<table class="tbl">
+  <thead><tr><th>Notación</th><th>Desigualdad</th><th>Diagrama</th><th>Nombre</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="a" style="font-size:14px">(a, b)</td><td class="m">a &lt; x &lt; b</td>
+      <td><svg viewBox="0 0 110 20" style="width:110px;display:block"><line x1="8" y1="10" x2="102" y2="10" stroke="#fbf9f4" stroke-width="1.5"/><circle cx="8" cy="10" r="4" fill="none" stroke="#fbf9f4" stroke-width="1.5"/><circle cx="102" cy="10" r="4" fill="none" stroke="#fbf9f4" stroke-width="1.5"/><text x="8" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">a</text><text x="102" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">b</text></svg></td>
+      <td style="color:var(--fg)">Abierto</td>
+    </tr>
+    <tr>
+      <td class="a" style="font-size:14px">[a, b]</td><td class="m">a ≤ x ≤ b</td>
+      <td><svg viewBox="0 0 110 20" style="width:110px;display:block"><line x1="8" y1="10" x2="102" y2="10" stroke="#fbf9f4" stroke-width="1.5"/><circle cx="8" cy="10" r="4" fill="#4d6ef5" stroke="#4d6ef5"/><circle cx="102" cy="10" r="4" fill="#4d6ef5" stroke="#4d6ef5"/><text x="8" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">a</text><text x="102" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">b</text></svg></td>
+      <td style="color:var(--fg)">Cerrado</td>
+    </tr>
+    <tr>
+      <td class="a" style="font-size:14px">[a, b)</td><td class="m">a ≤ x &lt; b</td>
+      <td><svg viewBox="0 0 110 20" style="width:110px;display:block"><line x1="8" y1="10" x2="102" y2="10" stroke="#fbf9f4" stroke-width="1.5"/><circle cx="8" cy="10" r="4" fill="#4d6ef5" stroke="#4d6ef5"/><circle cx="102" cy="10" r="4" fill="none" stroke="#fbf9f4" stroke-width="1.5"/><text x="8" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">a</text><text x="102" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">b</text></svg></td>
+      <td style="color:var(--fg)">Semiabierto</td>
+    </tr>
+    <tr>
+      <td class="a" style="font-size:14px">(a, +∞)</td><td class="m">x &gt; a</td>
+      <td><svg viewBox="0 0 110 20" style="width:110px;display:block"><line x1="8" y1="10" x2="96" y2="10" stroke="#fbf9f4" stroke-width="1.5"/><polygon points="96,10 88,6 88,14" fill="#fbf9f4"/><circle cx="8" cy="10" r="4" fill="none" stroke="#fbf9f4" stroke-width="1.5"/><text x="8" y="20" text-anchor="middle" fill="#717582" font-size="8" font-family="JetBrains Mono">a</text></svg></td>
+      <td style="color:var(--fg)">Infinito</td>
+    </tr>
+  </tbody>
+</table>
+<div class="math mt-lg">Los extremos infinitos siempre llevan paréntesis.<br>+∞ y −∞ no son números que se puedan alcanzar.</div>
+`}},
+
+/* 09 — VALOR ABSOLUTO */
+{id:'09',cat:'VALOR ABSOLUTO',title:'El Valor Absoluto Mide Distancia',sub:'|x| = distancia al origen',
+render(){return`
+<div class="c-tl">┌ [X: 009.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 09 // Valor Absoluto</span><span class="s-ref">LÁM 09 // REF NR-009</span></div>
+<h1 class="sh1">El Valor Absoluto Mide Distancia</h1><div class="divider"></div>
+<div class="g2" style="align-items:start">
+  <div>
+    <div class="math">|x| = x &nbsp;&nbsp;si x ≥ 0<br>|x| = −x &nbsp;si x &lt; 0</div>
+    <div class="card mt-md"><div class="card-label">Ejemplos básicos</div><div class="card-body mono" style="font-size:13px;line-height:2.1">|-5| = 5<br>|7| = 7<br>|x − 3| = 2 → x = 1 ó x = 5</div></div>
+    <div class="card mt-md"><div class="card-label">Distancia entre puntos</div><div class="card-body" style="font-size:12px;line-height:1.65">La distancia entre dos puntos a y b en ℝ es |b − a|. Es siempre no negativa.</div></div>
+  </div>
+  <div>
+    <div class="svg-wrap" style="margin:0">
+      <p class="mono muted" style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Ejemplo: |x − 3| ≤ 2 &nbsp;→&nbsp; x ∈ [1, 5]</p>
+      <svg viewBox="0 0 290 85" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+        <text x="145" y="18" fill="#a4a8b5" text-anchor="middle" font-size="10" font-family="JetBrains Mono">Radio 2</text>
+        <path d="M 55 25 L 55 30 L 235 30 L 235 25" fill="none" stroke="#717582" stroke-width="1"/>
+        <line x1="10" y1="52" x2="275" y2="52" stroke="#fbf9f4" stroke-width="1.5"/>
+        <polygon points="275,52 265,47 265,57" fill="#fbf9f4"/>
+        <line x1="55" y1="52" x2="235" y2="52" stroke="#4d6ef5" stroke-width="3"/>
+        <circle cx="55" cy="52" r="6" fill="#4d6ef5"/>
+        <circle cx="145" cy="52" r="6" fill="#4d6ef5"/>
+        <circle cx="235" cy="52" r="6" fill="#4d6ef5"/>
+        <text x="55" y="72" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">1</text>
+        <text x="145" y="72" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">3</text>
+        <text x="235" y="72" text-anchor="middle" fill="#a4a8b5" font-size="11" font-family="JetBrains Mono">5</text>
+      </svg>
+    </div>
+    <div class="math mt-md">|x − 3| ≤ 2 ⟺ 1 ≤ x ≤ 5<br>Solución: x ∈ [1, 5]</div>
+  </div>
+</div>
+`}},
+
+/* 10 — RADICALES */
+{id:'10',cat:'RADICALES',title:'Radicales y Notación Científica',sub:'Propiedades · Escritura comprimida',
+render(){return`
+<div class="c-tl">┌ [X: 010.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 10 // Radicales</span><span class="s-ref">LÁM 10 // REF NR-010</span></div>
+<h1 class="sh1">Radicales y Notación Científica</h1><div class="divider"></div>
+<div class="g2">
+  <div>
+    <p style="font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem">■ Propiedades</p>
+    <div class="math">√(a · b) = √a · √b</div>
+    <div class="math">√(a / b) = √a / √b</div>
+    <div class="math">√(a²) = |a| &nbsp; (distancia)</div>
+    <div class="card mt-md"><div class="card-label">Nota importante</div><div class="card-body" style="font-size:12px;line-height:1.65">√(a²) = |a|, no simplemente a. Para a negativo: √((-3)²) = √9 = 3 = |-3|. El resultado es siempre ≥ 0.</div></div>
+  </div>
+  <div>
+    <p style="font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem">■ Escritura Científica: a × 10ⁿ</p>
+    <div class="card"><div class="card-label">Formato</div><div class="card-body mono" style="font-size:12px;line-height:2.2">0.00042 = 4.2 × 10⁻⁴<br>5 600 000 = 5.6 × 10⁶</div></div>
+    <div class="math mt-md">(2 × 10³)(3 × 10⁻⁵)<br>= 6 × 10⁻² = 0.06</div>
+    <div class="card mt-sm"><div class="card-label">Regla clave</div><div class="card-body" style="font-size:12px">Comprime números muy grandes (10⁶⁺) o muy pequeños (10⁻⁶ o menos) para facilitar el cálculo.</div></div>
+  </div>
+</div>
+`}},
+
+/* 11 — COMPLETITUD */
+{id:'11',cat:'COMPLETITUD',title:'Completitud de ℝ',sub:'ℝ no tiene agujeros; ℚ sí.',
+render(){return`
+<div class="c-tl">┌ [X: 011.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 11 // Completitud</span><span class="s-ref">LÁM 11 // REF NR-011</span></div>
+<h1 class="sh1">Completitud</h1><div class="divider"></div>
+<div class="g2" style="align-items:start">
+  <div>
+    <div class="card"><div class="card-label">Axioma de Completitud</div><div class="card-body" style="font-size:14px;line-height:1.7">Todo conjunto no vacío y acotado superiormente tiene un supremo <strong>en ℝ</strong>.</div></div>
+    <div class="math mt-md">ℝ no tiene agujeros.<br>ℚ sí tiene agujeros.</div>
+    <div class="card mt-md"><div class="card-label">¿Por qué importa?</div><div class="card-body" style="font-size:13px;line-height:1.65">La completitud distingue a ℝ de ℚ: llena los huecos que dejan las fracciones. Sin ella, la recta tendría un agujero en cada número irracional.</div></div>
+    <div class="math mt-md">A = {x ∈ ℚ : x² &lt; 2}<br>sup A = √2 &nbsp; (existe en ℝ, no en ℚ)</div>
+  </div>
+  <div class="svg-wrap" style="margin:0">
+    <p class="mono muted" style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem">A = {x ∈ ℚ : x² &lt; 2} → sup A = √2</p>
+    <svg viewBox="0 0 290 115" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+      <rect x="10" y="28" width="145" height="38" fill="#4d6ef5" fill-opacity=".1"/>
+      <circle cx="20" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="45" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="72" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="96" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="112" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="126" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="137" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="145" cy="47" r="3" fill="#a4a8b5"/>
+      <circle cx="155" cy="47" r="6" fill="none" stroke="#4d6ef5" stroke-width="2"/>
+      <text x="155" y="20" text-anchor="middle" fill="#4d6ef5" font-size="10" font-family="JetBrains Mono">√2 = sup A</text>
+      <line x1="155" y1="24" x2="155" y2="40" stroke="#4d6ef5" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="80" y="20" text-anchor="middle" fill="#a4a8b5" font-size="10" font-family="JetBrains Mono">A</text>
+      <line x1="10" y1="78" x2="275" y2="78" stroke="#fbf9f4" stroke-width="1.5"/>
+      <polygon points="275,78 265,73 265,83" fill="#fbf9f4"/>
+      <line x1="10" y1="72" x2="10" y2="84" stroke="#fbf9f4" stroke-width="1"/><text x="10" y="98" text-anchor="middle" fill="#a4a8b5" font-size="10" font-family="JetBrains Mono">0</text>
+      <line x1="80" y1="72" x2="80" y2="84" stroke="#fbf9f4" stroke-width="1"/><text x="80" y="98" text-anchor="middle" fill="#a4a8b5" font-size="10" font-family="JetBrains Mono">1</text>
+      <line x1="155" y1="72" x2="155" y2="84" stroke="#fbf9f4" stroke-width="1"/><text x="155" y="98" text-anchor="middle" fill="#4d6ef5" font-size="10" font-family="JetBrains Mono">√2</text>
+      <line x1="193" y1="72" x2="193" y2="84" stroke="#fbf9f4" stroke-width="1"/><text x="193" y="98" text-anchor="middle" fill="#a4a8b5" font-size="10" font-family="JetBrains Mono">2</text>
+      <line x1="250" y1="72" x2="250" y2="84" stroke="#fbf9f4" stroke-width="1"/><text x="250" y="98" text-anchor="middle" fill="#a4a8b5" font-size="10" font-family="JetBrains Mono">3</text>
+    </svg>
+  </div>
+</div>
+`}},
+
+/* 12 — SÍNTESIS */
+{id:'12',cat:'SÍNTESIS',title:'Síntesis de la Unidad',sub:'5 conceptos fundamentales',
+render(){return`
+<div class="c-tl">┌ [X: 012.00 / Y: 000.00]</div><div class="c-br">ℝ ┘</div>
+<div class="s-meta"><span class="s-tag">Lámina 12 // Síntesis Final</span><span class="s-ref">LÁM 12 // REF NR-012</span></div>
+<h1 class="sh1">Síntesis de la Unidad</h1><div class="divider"></div>
+<div class="syn-item"><span class="syn-n">01.</span><span class="syn-t"><strong>ℝ = ℚ ∪ 𝕀.</strong> La recta es un continuo sin huecos.</span></div>
+<div class="syn-item"><span class="syn-n">02.</span><span class="syn-t"><strong>Racional:</strong> Expansión decimal exacta o periódica.</span></div>
+<div class="syn-item"><span class="syn-n">03.</span><span class="syn-t"><strong>Irracional:</strong> Expansión decimal infinita y no periódica.</span></div>
+<div class="syn-item"><span class="syn-n">04.</span><span class="syn-t"><strong>Orden denso:</strong> Entre dos reales siempre hay otro.</span></div>
+<div class="syn-item"><span class="syn-n">05.</span><span class="syn-t"><strong>Intervalos y valor absoluto</strong> describen rangos y distancias con precisión matemática.</span></div>
+<div class="final-box">
+  <p>Cada punto de la recta es un número.<br>Y cada número, un punto.</p>
+</div>
+`}}
+
+]; // end slides
+
+/* =====================================================
+   STATE
+===================================================== */
+let cur = 0, panelOpen = true, autoOn = false, autoTimer = null;
+
+/* =====================================================
+   DOM REFS
+===================================================== */
+const listEl    = document.getElementById('slide-list');
+const contentEl = document.getElementById('sc');
+const progEl    = document.getElementById('prog');
+const curEl     = document.getElementById('c-cur');
+const fRefEl    = document.getElementById('f-ref');
+const btnPrev   = document.getElementById('btn-prev');
+const btnNext   = document.getElementById('btn-next');
+const menuBtn   = document.getElementById('menu-toggle');
+const panelEl   = document.getElementById('panel');
+const autoBtn   = document.getElementById('btn-auto');
+const autoIcon  = document.getElementById('auto-icon');
+const autoBadge = document.getElementById('auto-badge');
+
+/* =====================================================
+   RENDER LIST
+===================================================== */
+function renderList() {
+  listEl.innerHTML = '';
+  slides.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 's-item' + (i === cur ? ' on' : '');
+    el.innerHTML = `
+      <div class="s-num">${s.id}</div>
+      <div class="s-info">
+        <div class="s-cat">${s.cat}</div>
+        <div class="s-t">${s.title}</div>
+        <div class="s-sub">${s.sub}</div>
+        <div class="s-active"><span class="s-dot"></span><span>EN PANTALLA</span></div>
+      </div>`;
+    el.addEventListener('click', () => go(i));
+    listEl.appendChild(el);
+  });
+  listEl.children[cur]?.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+/* =====================================================
+   RENDER SLIDE
+===================================================== */
+function renderSlide() {
+  const s = slides[cur];
+  contentEl.style.animation = 'none';
+  void contentEl.offsetHeight;
+  contentEl.style.animation = '';
+  contentEl.innerHTML = s.render();
+  curEl.textContent = s.id;
+  progEl.style.width = ((cur+1)/slides.length*100) + '%';
+  btnPrev.disabled = cur === 0;
+  btnNext.disabled = cur === slides.length - 1;
+  fRefEl.textContent = 'SEC 01 // REF NR-' + s.id.padStart(3,'0');
+  renderList();
+  document.getElementById('slide-display').scrollTop = 0;
+}
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+function go(n) { if(n>=0 && n<slides.length){cur=n;renderSlide()} }
+btnPrev.addEventListener('click', ()=>go(cur-1));
+btnNext.addEventListener('click', ()=>go(cur+1));
+
+/* =====================================================
+   AUTOPLAY
+===================================================== */
+autoBtn.addEventListener('click', () => {
+  autoOn = !autoOn;
+  if(autoOn){
+    autoIcon.textContent = 'pause';
+    autoBadge.textContent = 'ON';
+    autoBadge.style.background = 'var(--fg)';
+    autoBadge.style.color = 'var(--bg)';
+    autoTimer = setInterval(()=>go(cur < slides.length-1 ? cur+1 : 0), 4000);
+    autoBtn.classList.add('on');
+  } else {
+    autoIcon.textContent = 'play_arrow';
+    autoBadge.textContent = '4s';
+    autoBadge.style.background = '';
+    autoBadge.style.color = '';
+    clearInterval(autoTimer);
+    autoBtn.classList.remove('on');
+  }
+});
+
+/* =====================================================
+   MENU TOGGLE
+===================================================== */
+menuBtn.addEventListener('click', () => {
+  panelOpen = !panelOpen;
+  if(window.innerWidth <= 768) {
+    panelEl.classList.toggle('m-open');
+    panelEl.classList.remove('closed');
+  } else {
+    panelEl.classList.toggle('closed');
+  }
+});
+
+/* =====================================================
+   FULLSCREEN
+===================================================== */
+function toggleFS() {
+  !document.fullscreenElement
+    ? document.documentElement.requestFullscreen().catch(()=>{})
+    : document.exitFullscreen();
+}
+document.getElementById('btn-fs').addEventListener('click', toggleFS);
+document.getElementById('btn-fs2').addEventListener('click', toggleFS);
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+window.addEventListener('keydown', e => {
+  switch(e.key){
+    case 'ArrowRight': case 'ArrowDown': case ' ': e.preventDefault(); go(cur+1); break;
+    case 'ArrowLeft':  case 'ArrowUp':              e.preventDefault(); go(cur-1); break;
+    case 'f': case 'F': toggleFS(); break;
+    case 'Home': go(0); break;
+    case 'End':  go(slides.length-1); break;
+  }
+});
+
+/* =====================================================
+   INIT
+===================================================== */
+renderSlide();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
