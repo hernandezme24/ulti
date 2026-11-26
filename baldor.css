@@ -554,6 +554,31 @@ footer {
 }
 .svg-caption { font-family:var(--serif); font-size:14px; font-style:italic; color:var(--sepia); margin-bottom:.75rem; text-align:center }
 
+/* Botón PDF */
+.btn-pdf {
+  position: relative;
+  border-color: var(--crimson) !important;
+  color: var(--crimson) !important;
+  transition: background .15s, color .15s;
+}
+.btn-pdf:hover {
+  background: var(--crimson) !important;
+  color: var(--page) !important;
+}
+.btn-pdf::after {
+  content: 'PDF';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  font-size: 7px;
+  font-family: var(--mono);
+  letter-spacing: .04em;
+  background: var(--crimson);
+  color: var(--page);
+  padding: 1px 3px;
+  line-height: 1.2;
+}
+
 /* ---------------------------------------------------------------------
    18b. PORTADA ORNAMENTAL (lámina 02 — frontispicio Baldor)
    --------------------------------------------------------------------- */
