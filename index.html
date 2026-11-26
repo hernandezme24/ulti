@@ -102,6 +102,9 @@
     <button class="i-btn" id="btn-fs2">
       <span class="mi">fullscreen</span>
     </button>
+    <button class="i-btn btn-pdf" id="btn-pdf" title="Descargar PDF">
+      <span class="mi">download</span>
+    </button>
   </div>
 </footer>
 
@@ -606,8 +609,101 @@ window.addEventListener('keydown', e => {
    INIT
 ===================================================== */
 renderSlide();
+
+/* =====================================================
+   BOTÓN PDF — abre todas las láminas en una ventana
+   e invoca el diálogo de impresión ("Guardar como PDF")
+===================================================== */
+document.getElementById('btn-pdf').addEventListener('click', () => {
+  const printWin = window.open('', '_blank', 'width=900,height=700');
+  if (!printWin) { alert('Permite las ventanas emergentes para descargar el PDF.'); return; }
+
+  let allSlides = '';
+  slides.forEach((slide, i) => {
+    allSlides += `
+      <div class="slide-page" style="page-break-after: always; padding: 2.5rem 3rem; min-height: 100vh; box-sizing: border-box; position: relative;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; margin-bottom:1rem; letter-spacing:.08em;">
+          Matemática · Unidad 01 &nbsp;|&nbsp; Lámina ${String(i+1).padStart(2,'0')} de ${slides.length}
+        </div>
+        ${slide.render()}
+      </div>`;
+  });
+
+  const cssHref = window.location.href.split(/[?#]/)[0].replace(/[^/]*$/, '') + 'baldor.css';
+
+  printWin.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Números Reales — Álgebra de Baldor</title>
+  <link rel="stylesheet" href="${cssHref}">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: auto; overflow: visible; user-select: text; }
+    body {
+      background: #EDE8DC;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      color: #1A1A1A;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .slide-page { background: #F9F7F2; border: 1px solid #BBBBBB; }
+    h1.sh1 { color: #CC0000; font-size: 32px; }
+    .cover-title { color: #CC0000; font-size: 60px; font-variant: small-caps; }
+    .s-tag { color: #CC0000; border-top: 1px solid #CC0000; border-bottom: 1px solid #CC0000; padding: 1px 10px; font-size: 11px; }
+    .s-ref { font-size: 11px; color: #888; }
+    .s-meta { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+    .divider { border-top: 2px solid #1A1A1A; border-bottom: 1px solid #BBBBBB; margin: .75rem 0 1.25rem; height: 5px; }
+    .math { background: #F0EBE0; border-left: 4px solid #BBBBBB; padding: .75rem 1rem .75rem 2rem; margin: .75rem 0; font-size: 13px; color: #990000; line-height: 1.8; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .card { background: #F0EBE0; border: 1px solid #DDDDDD; border-top: 2px solid #BBBBBB; padding: 1rem; margin-top: .75rem; }
+    .card-label { font-size: 11px; letter-spacing: .1em; color: #CC0000; margin-bottom: 4px; }
+    .card-title { font-size: 15px; font-weight: 600; color: #CC0000; margin-bottom: 4px; }
+    .card-body { font-size: 13px; color: #2D2D2D; line-height: 1.6; }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin: .75rem 0; }
+    .tbl th { font-size: 11px; letter-spacing: .08em; color: #1A1A1A; border-bottom: 2px solid #1A1A1A; padding: .5rem .75rem; background: #E8E2D4; text-align: left; }
+    .tbl td { padding: .4rem .75rem; border-bottom: 1px solid #DDDDDD; color: #1A1A1A; }
+    .tbl .a { color: #CC0000; font-size: 12px; }
+    .tbl .m { font-size: 12px; }
+    .cc { background: #F0EBE0; border: 1px solid #DDDDDD; padding: 1.25rem; }
+    .cc-h { font-size: 13px; font-weight: 600; color: #CC0000; padding-bottom: .5rem; border-bottom: 2px solid #BBBBBB; margin-bottom: .75rem; }
+    .cc-row { padding: .4rem 0; border-bottom: 1px dotted #DDDDDD; font-size: 13px; color: #1A1A1A; line-height: 1.5; }
+    .cc-ex { font-size: 11px; color: #990000; margin-top: 3px; }
+    .svg-wrap { background: #F0EBE0; border: 1px solid #DDDDDD; padding: .75rem 1rem; margin: .75rem 0; }
+    .syn-item { display: flex; gap: 1rem; padding: .6rem .75rem; border-bottom: 1px solid #DDDDDD; border-left: 2px solid #BBBBBB; margin-bottom: 4px; }
+    .syn-n { font-size: 18px; font-weight: 700; color: #CC0000; width: 32px; }
+    .syn-t { font-size: 13px; color: #1A1A1A; line-height: 1.5; }
+    .final-box { margin-top: 2rem; padding: 1.5rem; border: 2px solid #BBBBBB; text-align: center; }
+    .final-box p { font-size: 22px; font-weight: 700; color: #CC0000; }
+    .cover-eyebrow { font-size: 12px; color: #888; text-align: center; margin: .75rem 0 .5rem; }
+    .cover-sub { font-size: 14px; color: #CC0000; text-align: center; margin-bottom: 1.5rem; }
+    .cover-tag { font-size: 12px; color: #888; text-align: center; margin-top: 1.5rem; }
+    .body-text { font-size: 14px; line-height: 1.65; color: #2D2D2D; }
+    .body-text-p { font-size: 15px; color: #1A1A1A; line-height: 1.6; }
+    .section-label { font-size: 13px; font-weight: 600; color: #CC0000; margin-bottom: .5rem; border-bottom: 1px solid #DDDDDD; padding-bottom: .2rem; }
+    .mt-sm{margin-top:.5rem}.mt-md{margin-top:1rem}.mt-lg{margin-top:1.5rem}.mt-xl{margin-top:2.5rem}
+    .accent{color:#CC0000}.muted{color:#666}.mono{font-family:'JetBrains Mono',monospace}
+    em{font-style:italic;color:#2D2D2D}
+    strong{font-weight:600;color:#0A0A0A}
+    .c-tl,.c-tr,.c-bl,.c-br{display:none}
+    .s-active{display:none}
+    @media print {
+      .slide-page { page-break-after: always; border: none; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+${allSlides}
+<script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`);
+  printWin.document.close();
+});
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
